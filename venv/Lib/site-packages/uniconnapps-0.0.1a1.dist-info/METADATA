@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: uniconnapps
+Version: 0.0.1a1
+Summary: uniconnapps
+Author: Uniconnapps
+Author-email: oss-maintainers@uniconnapps.com
+License: Apache License 2.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >= 3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: NOTICE
+Requires-Dist: uniconnapps-connector
+
+# uca-pypi-default-namespace
+This package acts as an alias to uniconnapps-connector

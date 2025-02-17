@@ -1,0 +1,30 @@
+Metadata-Version: 2.1
+Name: uniconnapps-connector-proto
+Version: 0.0.1a2
+Summary: uniconnapps-connector-proto
+Author: Uniconnapps
+Author-email: oss-maintainers@uniconnapps.com
+License: Apache License 2.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >= 3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: NOTICE
+Requires-Dist: protobuf >=3.20.1
+Requires-Dist: grpcio >=1.50.0
+
+# uca-connector-proto-python
+This library is not meant to stand-alone. It holds the compiled gRPC proto files and used as a dependency for uniconnapps connector SDK for python
+# Resources
+- [NOTICE](https://github.com/uniconnapps/uca-connector-proto-python/blob/main/NOTICE)
+- [LICENSE](https://github.com/uniconnapps/uca-connector-proto-python/blob/main/LICENSE)
