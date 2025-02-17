@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #header {
+            background-color: #25D366;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #receiver-name {
+            background-color: #fff;
+            color: #333;
+            padding: 15px;
+            font-size: 16px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #fff;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            max-width: 70%;
+            word-wrap: break-word;
+            position: relative;
+            font-size: 15px;
+            display: inline-block;
+        }
+
+        .sender {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+            margin-left: auto;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 5px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .receiver {
+            background: #e1e1e1;
+            color: black;
+            margin-right: auto;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 20px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message small {
+            display: block;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .receiver small {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        #input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        #input-container input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #input-container button {
+            padding: 12px 20px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">Chat for Complaint: {{ request.complaint.title }}</div>
+    <div id="receiver-name">
+        Chatting with: {% if current_user.is_admin %}{{ request.user.username }}{% else %}Admin{% endif %}
+    </div>
+
+    <div id="messages">
+        {% for message in messages %}
+            {% set is_sender = (message.user_id == current_user.id) %}
+            <div class="message {{ 'sender' if is_sender else 'receiver' }}" data-user-id="{{ message.user_id }}">
+                {{ message.message }}
+                <small>{{ message.timestamp.strftime('%I:%M %p') }}</small>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="input-container">
+        <input type="text" id="message" placeholder="Type a message..." autocomplete="off" />
+        <button id="send_button">Send</button>
+    </div>
+
+    <script>
+        var socket = io.connect('http://127.0.0.1:5000');
+        const requestId = {{ request.id }};
+        const currentUserId = {{ current_user.id }};
+
+        socket.emit('join_room', { request_id: requestId });
+
+        window.onload = function() {
+            document.querySelectorAll('.message').forEach(msg => {
+                let userId = msg.getAttribute('data-user-id');
+                if (parseInt(userId) === currentUserId) {
+                    msg.classList.add('sender');
+                    msg.classList.remove('receiver');
+                } else {
+                    msg.classList.add('receiver');
+                    msg.classList.remove('sender');
+                }
+            });
+        };
+
+        document.getElementById('send_button').onclick = function() {
+            var message = document.getElementById('message').value.trim();
+            if (message !== "") {
+                socket.emit('send_message', { request_id: requestId, message: message });
+                document.getElementById('message').value = '';
+            }
+        };
+
+        socket.on('new_message', function(data) {
+            const messageContainer = document.getElementById('messages');
+            const newMessage = document.createElement('div');
+
+            const isSender = data.user_id === currentUserId;
+            newMessage.classList.add('message', isSender ? 'sender' : 'receiver');
+
+            newMessage.innerHTML = `
+                ${data.message}
+                <small>${new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</small>
+            `;
+
+            messageContainer.appendChild(newMessage);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        });
+    </script>
+
+</body>
+</html>

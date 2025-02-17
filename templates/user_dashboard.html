@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #ECF0F1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: #2C3E50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 22px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .sidebar ul li a:hover {
+            background: #34495E;
+        }
+        .sidebar .logout-btn {
+            background-color: #E74C3C;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .sidebar .logout-btn:hover {
+            background-color: #C0392B;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .app-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #34495E;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .content-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .complaint, .request {
+            background: #FFF;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .complaint h3, .request h3 {
+            margin-top: 0;
+        }
+        .complaint button, .request button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .complaint button:hover, .request button:hover {
+            background-color: #128C7E;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div>
+            <h2>Welcome, {{ username }}</h2>
+            <ul>
+                <li><a href="{{ url_for('user_dashboard') }}">All Complaints</a></li>
+                <li><a href="{{ url_for('user_pending_requests') }}">Pending Requests</a></li>
+                <li><a href="{{ url_for('user_approved_requests') }}">Approved Requests</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('help_support') }}">Help & Support</a></li>
+            </ul>
+        </div>
+        <button class="logout-btn" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- App Bar -->
+        <div class="app-bar">
+            <h2>Dashboard</h2>
+        </div>
+
+        <div class="content-container">
+            {% if show_complaints %}
+                <h3>Common Complaints</h3>
+                {% for complaint in complaints %}
+                    <div class="complaint">
+                        <h3>{{ complaint.title }}</h3>
+                        <p>{{ complaint.description }}</p>
+                        <form action="{{ url_for('request_help', complaint_id=complaint.id) }}" method="POST">
+                            <button type="submit">Request Help</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% elif show_pending %}
+                <h3>Pending Requests</h3>
+                {% for req in requests %}
+                    <div class="request">
+                        <h3>Complaint: {{ req.complaint.title }}</h3>
+                        <p>Status: <span style="color: orange;">Pending</span></p>
+                    </div>
+                {% endfor %}
+            {% elif show_approved %}
+                <h3>Approved Requests</h3>
+                {% for req in requests %}
+                    <div class="request">
+                        <h3>Complaint: {{ req.complaint.title }}</h3>
+                        <p>Status: <span style="color: green;">Approved</span></p>
+                        <a href="{{ url_for('chat', request_id=req.id) }}">
+                            <button>Chat</button>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

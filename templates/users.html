@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+        }
+        .user-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 18px;
+        }
+        .user-list li:last-child {
+            border-bottom: none;
+        }
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .user-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .user-actions .promote-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .user-actions .promote-btn:hover {
+            background-color: #2980b9;
+        }
+        .user-actions .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .user-actions .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Users</h1>
+        <ul class="user-list">
+            {% for user in users %}
+                <li>
+                    <span>{{ user.username }}</span>
+                    <div class="user-actions">
+                        {% if user.is_admin != True %}
+                            <form action="{{ url_for('promote_admin', user_id=user.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="promote-btn">Make Admin</button>
+                            </form>
+                        {% endif %}
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="delete-btn">Delete User</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+    </div>
+</body>
+</html>
